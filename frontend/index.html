@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Medical Assistant Chatbot</title>
+  <meta name="description" content="AI-powered Medical Chatbot with RAG document analysis and citations">
+  <!-- Google Fonts & FontAwesome -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon">
+          <i class="fa-solid fa-user-doctor"></i>
+        </div>
+        <div class="brand-info">
+          <h1>MediMind AI</h1>
+          <span class="brand-badge">
+            <span class="status-dot"></span> Online RAG Assistant
+          </span>
+        </div>
+      </div>
+
+      <div class="sidebar-content">
+        <!-- PDF Document Upload Section -->
+        <!-- <div class="sidebar-section">
+          <div class="section-title">
+            <i class="fa-solid fa-file-medical"></i> Medical Knowledge Base
+          </div>
+          
+          <div class="dropzone" id="dropzone">
+            <i class="fa-solid fa-cloud-arrow-up dropzone-icon"></i>
+            <p>Drag & drop medical PDFs</p>
+            <span>or click to browse files</span>
+            <input type="file" id="file-input" multiple accept=".pdf">
+          </div>
+
+          <div class="selected-files-list" id="selected-files-list"></div>
+
+          <button class="btn-upload" id="upload-btn" disabled>
+            <i class="fa-solid fa-upload"></i> Upload & Embed PDFs
+          </button>
+        </div> -->
+
+        <!-- Quick Questions Section -->
+        <div class="sidebar-section">
+          <div class="section-title">
+            <i class="fa-solid fa-lightbulb"></i> Suggested Prompts
+          </div>
+          <div class="quick-prompts">
+            <button class="prompt-chip"
+              data-prompt="What are the standard symptoms and treatment protocols for Type 2 Diabetes?">
+              <i class="fa-solid fa-notes-medical"></i> Diabetes symptoms & treatment
+            </button>
+            <button class="prompt-chip"
+              data-prompt="Can you summarize the clinical dosage guidelines in the uploaded documents?">
+              <i class="fa-solid fa-pills"></i> Clinical dosage guidelines
+            </button>
+            <button class="prompt-chip"
+              data-prompt="What precaution should be taken for patients with chronic hypertension?">
+              <i class="fa-solid fa-heart-pulse"></i> Hypertension precautions
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar Footer / Settings -->
+      <div class="sidebar-footer">
+        <div class="api-config-toggle" id="api-config-toggle">
+          <span><i class="fa-solid fa-gears"></i> Backend Server API</span>
+          <i class="fa-solid fa-chevron-down" id="config-chevron"></i>
+        </div>
+        <div class="api-config-panel" id="api-config-panel" style="display: none;">
+          <label style="font-size: 0.72rem; color: var(--text-muted);">FastAPI Base URL:</label>
+          <input type="text" id="api-base-url" class="api-input" value="http://localhost:8000">
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Chat Section -->
+    <main class="chat-section">
+      <!-- Toast Container -->
+      <div class="toast-container" id="toast-container"></div>
+
+      <!-- Chat Header -->
+      <header class="chat-header">
+        <div class="chat-title-container">
+          <button class="toggle-sidebar-btn" id="toggle-sidebar-btn" title="Toggle Sidebar">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+          <div style="display: flex; flex-direction: column;">
+            <h2 style="font-size: 1.05rem; font-weight: 700;">Medical Query & Diagnostic Assistant</h2>
+            <span style="font-size: 0.76rem; color: var(--text-muted);">Verified against uploaded vectorstore
+              documents</span>
+          </div>
+        </div>
+
+        <div class="chat-actions">
+          <button class="icon-btn" id="theme-toggle-btn" title="Toggle Dark/Light Theme">
+            <i class="fa-solid fa-moon"></i>
+          </button>
+          <button class="icon-btn" id="clear-chat-btn" title="Clear Conversation">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- Messages Area -->
+      <div class="messages-container" id="messages-container">
+        <!-- Welcome Screen -->
+        <div class="welcome-screen" id="welcome-screen">
+          <div class="welcome-icon">
+            <i class="fa-solid fa-stethoscope"></i>
+          </div>
+          <h2>How can I assist your medical inquiry today?</h2>
+          <p>Ask questions regarding clinical symptoms, treatments, or upload medical research PDFs to inquire directly
+            against your knowledge base.</p>
+
+          <div class="welcome-cards">
+            <div class="welcome-card" data-prompt="Summarize the core medical findings in the uploaded documents.">
+              <i class="fa-solid fa-file-prescription"></i>
+              <h4>Document Insights</h4>
+              <p>Extract clinical key points & tables</p>
+            </div>
+            <div class="welcome-card"
+              data-prompt="What are the contraindications for taking ACE inhibitors with NSAIDs?">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+              <h4>Drug Interactions</h4>
+              <p>Check contraindications & warnings</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Input Bar -->
+      <div class="input-container">
+        <form class="input-box" id="chat-form">
+          <textarea id="chat-input"
+            placeholder="Type your medical query here... (Press Enter to send, Shift+Enter for new line)"
+            rows="1"></textarea>
+          <button type="submit" class="send-btn" id="send-btn" title="Send Message" disabled>
+            <i class="fa-solid fa-paper-plane"></i>
+          </button>
+        </form>
+        <p class="disclaimer">
+          <i class="fa-solid fa-circle-info"></i> For informational and research purposes only. Always consult a
+          certified medical professional.
+        </p>
+      </div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
