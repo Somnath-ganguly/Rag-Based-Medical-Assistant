@@ -11,13 +11,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const chatForm = document.getElementById('chat-form');
   const chatInput = document.getElementById('chat-input');
   const sendBtn = document.getElementById('send-btn');
-  
+
   // Upload Elements
   const dropzone = document.getElementById('dropzone');
   const fileInput = document.getElementById('file-input');
   const selectedFilesList = document.getElementById('selected-files-list');
   const uploadBtn = document.getElementById('upload-btn');
-  
+
   // API Config Elements
   const apiConfigToggle = document.getElementById('api-config-toggle');
   const apiConfigPanel = document.getElementById('api-config-panel');
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function showToast(message, type = 'info') {
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
-    
+
     let iconClass = 'fa-circle-info';
     if (type === 'error') iconClass = 'fa-circle-exclamation';
     if (type === 'success') iconClass = 'fa-circle-check';
@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentTheme = document.documentElement.getAttribute('data-theme');
     const newTheme = currentTheme === 'light' ? 'dark' : 'light';
     document.documentElement.setAttribute('data-theme', newTheme);
-    
+
     const icon = themeToggleBtn.querySelector('i');
     icon.className = newTheme === 'light' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
   });
@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (pdfFiles.length < files.length) {
       showToast('Only PDF files are supported.', 'error');
     }
-    
+
     // Add unique files to selection
     pdfFiles.forEach(file => {
       if (!selectedFiles.some(f => f.name === file.name && f.size === file.size)) {
@@ -379,7 +379,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const errorMsg = data.error || data.detail || 'Error processing your medical query.';
         const indicator = document.getElementById('typing-indicator');
         if (indicator) indicator.remove();
-        
+
         appendAssistantMessage(`⚠️ Server Error: ${errorMsg}`);
         showToast(`Backend Error: ${errorMsg}`, 'error');
       }
