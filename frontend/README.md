@@ -1,6 +1,8 @@
 # Medical Chatbot Frontend UI
 
-A responsive medical chatbot UI designed to interface with the existing FastAPI backend (`POST /ask/` and `POST /upload_pdfs/`).
+A responsive, high-performance medical chatbot interface designed to connect with the FastAPI backend (`POST /ask/` and `POST /upload_pdfs/`).
+
+> ℹ️ **Full System Architecture & Pipeline Details**: For full documentation of the RAG pipeline, vector search, embeddings, and backend setup, see the main [Root README](../README.md).
 
 ## Features
 - **Medical Query Chat**: Real-time interface connected to `/ask/` endpoint using `question` Form data.
@@ -13,7 +15,7 @@ A responsive medical chatbot UI designed to interface with the existing FastAPI 
 ## Quick Start
 
 ### 1. Run the Backend API Server
-Ensure your virtual environment is active and required environment variables (e.g. `PINECONE_API_KEY`, `GOOGLE_API_KEY`, etc.) are set in `server/.env`.
+Ensure your virtual environment is active and required environment variables (`PINECONE_API_KEY`, `GOOGLE_API_KEY`, `GROQ_API_KEY`, etc.) are configured in `server/.env`.
 
 From the project root directory:
 ```bash
@@ -28,7 +30,7 @@ python -m uvicorn server.main:app --reload --port 8000
 You can open `frontend/index.html` directly in any web browser, or serve it using any HTTP server:
 
 ```bash
-# Option A: Simple Python HTTP Server from frontend directory
+# Simple Python HTTP Server from frontend directory
 cd frontend
 python -m http.server 3000
 ```
