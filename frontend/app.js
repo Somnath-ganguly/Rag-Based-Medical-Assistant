@@ -291,7 +291,34 @@ document.addEventListener('DOMContentLoaded', () => {
     return typingDiv;
   }
 
-  // Render Assistant Message with Sources Citations
+  // Render Markdown to HTML with marked.js and fallback
+  function renderMarkdown(text) {
+    if (!text) return '';
+    if (typeof marked !== 'undefined') {
+      try {
+        if (typeof marked.setOptions === 'function') {
+          marked.setOptions({ gfm: true, breaks: true });
+        }
+        return marked.parse(text);
+      } catch (e) {
+        console.warn('Marked parser warning, using fallback:', e);
+      }
+    }
+    return fallbackMarkdownRender(text);
+  }
+
+  // Lightweight Fallback Markdown Formatter
+  function fallbackMarkdownRender(text) {
+    if (!text) return '';
+    let html = escapeHtml(text);
+    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+    html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+    html = html.replace(/\n/g, '<br>');
+    return html;
+  }
+
+  // Render Assistant Message with Sources Citations & Markdown Support
   function appendAssistantMessage(responseText, sources = []) {
     const indicator = document.getElementById('typing-indicator');
     if (indicator) indicator.remove();
@@ -325,13 +352,35 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
     }
 
+    const formattedContent = renderMarkdown(responseText);
+
     messageDiv.innerHTML = `
       <div class="avatar"><i class="fa-solid fa-user-doctor"></i></div>
       <div class="message-content">
-        <div class="bubble">${escapeHtml(responseText)}</div>
+        <div class="bubble markdown-body">${formattedContent}</div>
         ${sourcesHtml}
+        <div class="message-actions">
+          <button class="action-btn copy-btn" title="Copy response">
+            <i class="fa-regular fa-copy"></i> Copy
+          </button>
+        </div>
       </div>
     `;
+
+    // Copy Response Listener
+    const copyBtn = messageDiv.querySelector('.copy-btn');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(responseText).then(() => {
+          copyBtn.innerHTML = `<i class="fa-solid fa-check" style="color:var(--success);"></i> Copied!`;
+          setTimeout(() => {
+            copyBtn.innerHTML = `<i class="fa-regular fa-copy"></i> Copy`;
+          }, 2000);
+        }).catch(err => {
+          showToast('Failed to copy text', 'error');
+        });
+      });
+    }
 
     messagesContainer.appendChild(messageDiv);
     scrollToBottom();
