@@ -31,8 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Get current API Base URL
   function getApiBaseUrl() {
-    let url = apiBaseUrlInput.value.trim();
-    if (!url) url = 'http://localhost:8000';
+    let url = apiBaseUrlInput ? apiBaseUrlInput.value.trim() : '';
+    if (!url) url = 'https://medical-chatbot-backend-4ipf.onrender.com';
     return url.replace(/\/+$/, ''); // Strip trailing slashes
   }
 
@@ -90,11 +90,15 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // API Config Toggle Collapsible
-  apiConfigToggle.addEventListener('click', () => {
-    const isHidden = apiConfigPanel.style.display === 'none';
-    apiConfigPanel.style.display = isHidden ? 'flex' : 'none';
-    configChevron.className = isHidden ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down';
-  });
+  if (apiConfigToggle && apiConfigPanel) {
+    apiConfigToggle.addEventListener('click', () => {
+      const isHidden = apiConfigPanel.style.display === 'none';
+      apiConfigPanel.style.display = isHidden ? 'flex' : 'none';
+      if (configChevron) {
+        configChevron.className = isHidden ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down';
+      }
+    });
+  }
 
   // Input Auto-resize & Enable/Disable Send Button
   chatInput.addEventListener('input', () => {
